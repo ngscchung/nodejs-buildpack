@@ -213,7 +213,6 @@ func (s *Supplier) runScript(script, tool string) error {
 	}
 
 	s.Log.Info("Running %s (%s)", script, tool)
-
 	return s.Command.Execute(s.Stager.BuildDir(), os.Stdout, os.Stderr, tool, args...)
 
 }
@@ -235,6 +234,12 @@ func (s *Supplier) BuildDependencies() error {
 	}
 
 	s.Log.BeginStep("Building dependencies")
+os.Setenv("OCI_LIB_DIR", "/tmp/app/.cloudfoundry/0/oracle/instantclient")
+os.Setenv("OCI_INC_DIR", os.Getenv("OCI_LIB_DIR") + "/sdk/include")
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+Check Env var")
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "[" + os.Getenv("OCI_LIB_DIR") + "]")
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", os.Getenv("OCI_LIB_DIR"))
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", "/tmp/app/.cloudfoundry/0/oracle/instantclient")
 
 	if err := s.runPrebuild(tool); err != nil {
 		return err

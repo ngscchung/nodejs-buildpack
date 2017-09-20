@@ -17,6 +17,7 @@ include_files:
 - bin/finalize
 - bin/release
 - bin/supply
+- bin/install_oracleclient.sh
 - manifest.yml
 - profile/appdynamics-setup.sh
 - profile/newrelic-setup.sh
