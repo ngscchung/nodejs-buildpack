@@ -1,0 +1,9 @@
+git checkout -b [name_of_your_new_branch]
+git checkout [name_of_your_new_branch]
+git push origin [name_of_your_new_branch]
+
+cf login -a https://api.system.spi-pcf.oocl.com --skip-ssl-validation
+C8YArt8Gea_32WphDQGoWOJww6K7eAG-
+
+s.c.ng@oocl.com
+a5deef09d2f409b3eef34a1f4f0e6d164ac26a06

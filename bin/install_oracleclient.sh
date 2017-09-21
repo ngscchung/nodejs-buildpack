@@ -65,21 +65,13 @@ install_oracle_libraries(){
   ln -s libocci.so.11.1 libocci.so
   
   mkdir -p "$DEPS_DIR/$DEPS_IDX/env"
-  # prepare env variables for "pip install" use during staging
+  # prepare env variables for "npm install" use during staging
   # append_profile_d ORACLE_HOME "\$DEPS_DIR/$DEPS_IDX/oracle/instantclient"
   echo $DEPS_DIR/$DEPS_IDX/oracle/instantclient > $DEPS_DIR/$DEPS_IDX/env/ORACLE_HOME
   # append_profile_d LD_RUN_PATH "\$DEPS_DIR/$DEPS_IDX/oracle/instantclient"
   echo $DEPS_DIR/$DEPS_IDX/oracle/instantclient > $DEPS_DIR/$DEPS_IDX/env/LD_RUN_PATH
   echo $DEPS_DIR/$DEPS_IDX/oracle/instantclient > $DEPS_DIR/$DEPS_IDX/env/OCI_LIB_DIR
   echo $DEPS_DIR/$DEPS_IDX/oracle/instantclient/sdk/include > $DEPS_DIR/$DEPS_IDX/env/OCI_INC_DIR
-
-export LD_LIBRARY_PATH="$DEPS_DIR/$DEPS_IDX/oracle/instantclient:$LD_LIBRARY_PATH"
-export LD_RUN_PATH="$DEPS_DIR/$DEPS_IDX/oracle/instantclient:$LD_RUN_PATH"
-export OCI_LIB_DIR="$DEPS_DIR/$DEPS_IDX/oracle/instantclient"
-export OCI_INC_DIR="$DEPS_DIR/$DEPS_IDX/oracle/instantclient/sdk/include"
-export ORACLE_HOME="$DEPS_DIR/$DEPS_IDX/oracle/instantclient"
-
-ls -al $OCI_LIB_DIR/libclntsh.so
 
   # prepare env variables for python runtime use
   # Shell scripts in .profile.d folder are triggered at the start of cf start app

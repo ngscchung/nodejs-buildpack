@@ -234,6 +234,8 @@ func (s *Supplier) BuildDependencies() error {
 	}
 
 	s.Log.BeginStep("Building dependencies")
+//TODO: ngsc: Hardcoded environemnt variables due to a weird issue that the env var value 
+//set through $DEPS_DIR/$DEPS_IDX/env/ has line break at the end... potential bug in libbuildpack/stager.go SetStagingEnvironment()??
 os.Setenv("OCI_LIB_DIR", "/tmp/app/.cloudfoundry/0/oracle/instantclient")
 os.Setenv("OCI_INC_DIR", os.Getenv("OCI_LIB_DIR") + "/sdk/include")
 s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+Check Env var")
