@@ -14,5 +14,5 @@ output_dir=$(mktemp -d -t supplyXXX)
 echo "-----> Running go build supply"
 GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/supply nodejs/supply/cli
 
-$BUILDPACK_DIR/bin/install_oracleclient.sh
+#$BUILDPACK_DIR/bin/install_oracleclient.sh
 $output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"

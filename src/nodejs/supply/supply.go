@@ -8,7 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
+    "path/filepath"
 	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
@@ -29,6 +29,8 @@ type Manifest interface {
 	DefaultVersion(string) (libbuildpack.Dependency, error)
 	InstallDependency(libbuildpack.Dependency, string) error
 	InstallOnlyVersion(string, string) error
+    FetchDependency(libbuildpack.Dependency, string) error
+    
 }
 
 type NPM interface {
@@ -234,14 +236,56 @@ func (s *Supplier) BuildDependencies() error {
 	}
 
 	s.Log.BeginStep("Building dependencies")
+
+// s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+BuildDir, DepDir and DepsIdx")
+// s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", s.Stager.BuildDir())
+// s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls -al ", s.Stager.BuildDir())
+// s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", s.Stager.DepDir())
+// s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls -al ", s.Stager.DepDir())
+// s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", s.Stager.DepsIdx())
+
+//Find buildpack directory and search for install_oracleclient.sh script in bin folder
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+Perform install_oracleclient")
+buildpackDir, err := libbuildpack.GetBuildpackDir()
+	if err != nil {
+		s.Log.Error("Unable to determine buildpack directory: %s", err.Error())
+		os.Exit(9)
+	}
+buildpackBinDir := filepath.Join(buildpackDir, "bin")
+installOracleClientSh := filepath.Join(buildpackBinDir, "install_oracleclient.sh")
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", buildpackBinDir)
+
+//hardcoded filename and path, make them consistent with install_oracleclient.sh
+s.GetDependencyPath("oracleclientbasic", s.Stager.BuildDir(), "oracleclientbasic.tar")
+s.GetDependencyPath("oracleclientsdk", s.Stager.BuildDir(), "oracleclientsdk.tar")
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+Check fetched oracleclient")
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", s.Stager.BuildDir())
+//Trigger install_oracleclient.sh 
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), installOracleClientSh, s.Stager.BuildDir(), s.Stager.BuildDir(), s.Stager.DepDir(), s.Stager.DepsIdx())
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", buildpackDir)
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", buildpackBinDir)
+
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", filepath.Join(s.Stager.DepDir(), "bin"))
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", filepath.Join(s.Stager.DepDir(), "env"))
+
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", filepath.Join(s.Stager.BuildDir(), ".."))
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", filepath.Join(s.Stager.BuildDir(), "../.."))
+//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "printenv")
+
 //TODO: ngsc: Hardcoded environemnt variables due to a weird issue that the env var value 
 //set through $DEPS_DIR/$DEPS_IDX/env/ has line break at the end... potential bug in libbuildpack/stager.go SetStagingEnvironment()??
-os.Setenv("OCI_LIB_DIR", "/tmp/app/.cloudfoundry/0/oracle/instantclient")
+instantclientHome := filepath.Join(s.Stager.DepDir(), "oracle/instantclient")
+//os.Setenv("OCI_LIB_DIR", "/tmp/app/.cloudfoundry/0/oracle/instantclient")
+os.Setenv("OCI_LIB_DIR", instantclientHome)
 os.Setenv("OCI_INC_DIR", os.Getenv("OCI_LIB_DIR") + "/sdk/include")
 s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+Check Env var")
 s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "[" + os.Getenv("OCI_LIB_DIR") + "]")
-//s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", os.Getenv("OCI_LIB_DIR"))
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", os.Getenv("OCI_LIB_DIR"))
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", s.Stager.DepDir())
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", filepath.Join(s.Stager.DepDir(), "profile.d"))
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", filepath.Join(s.Stager.DepDir(), "env"))
 //s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "ls", "-al", "/tmp/app/.cloudfoundry/0/oracle/instantclient")
+s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "echo", "_+_+_+_+Finished install_oracleclient")
 
 	if err := s.runPrebuild(tool); err != nil {
 		return err
@@ -460,6 +504,33 @@ func (s *Supplier) WarnNodeEngine() {
 		s.Log.Warning("Dangerous semver range (>) in engines.node. See: %s", docsLink)
 	}
 	return
+}
+
+func (s *Supplier) GetDependencyPath(depName string, outputDir string, outputFileName string) error {
+    var dep libbuildpack.Dependency
+    
+    //src/nodejs/vendor/github.com/cloudfoundry/libbuildpack/manifest.go func FetchDependency
+    var err error
+    dep, err = s.Manifest.DefaultVersion(depName)
+    if err != nil {
+        s.Log.Error("GetDependencyPath:Manifest.DefaultVersion Error: %s", err.Error())
+        return err
+    }
+    
+    // entry_oraclebasic, err := s.Manifest.getEntry(dep)
+	// if err != nil {
+		// return err
+	// }
+    
+    // outputFile := filepath.Join(outputDir, path.Base(entry_oraclebasic.URI))
+    
+    //Hardcoded file names...
+    outputFile := filepath.Join(outputDir, outputFileName)
+    
+    s.Manifest.FetchDependency(dep, outputFile)
+        
+    return nil
+
 }
 
 func (s *Supplier) InstallNode(tempDir string) error {

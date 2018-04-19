@@ -10,6 +10,9 @@ mkdir -p "$BUILD_DIR/.profile.d"
 echo "export DEPS_DIR=\$HOME/.cloudfoundry" > "$BUILD_DIR/.profile.d/0000_set-deps-dir.sh"
 
 #ngsc 20170921 perform oracle instantclient installation before "supply"
+echo "*_*_*_*_Perform install_oracleclient"
 $BUILDPACK_DIR/bin/install_oracleclient.sh "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
+echo "*_*_*_*_Perform supply"
 $BUILDPACK_DIR/bin/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
+echo "*_*_*_*_Perform finalize"
 $BUILDPACK_DIR/bin/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0

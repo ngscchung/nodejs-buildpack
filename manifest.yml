@@ -3,6 +3,10 @@ language: nodejs
 default_versions:
 - name: node
   version: 4.8.4
+- name: oracleclientsdk
+  version: 11.2.0
+- name: oracleclientbasic
+  version: 11.2.0 
 include_files:
 - CHANGELOG
 - CONTRIBUTING.md
@@ -91,6 +95,18 @@ dependencies:
   version: 1.0.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v1.0.2-bcdf4469.tar.gz
   md5: bcdf44691092302858de5df1012861e3
+  cf_stacks:
+  - cflinuxfs2
+- name: oracleclientbasic
+  version: 11.2.0
+  uri: http://artifact.oocl.com:8081/artifactory/thirdparty_tools/thirdparty_lib/instantclient-basic-linux.x64-11.2.0.4.0/instantclient-basic-linux.x64-11.2.0.4.0/instantclient-basic-linux.x64-11.2.0.4.0-instantclient-basic-linux.x64-11.2.0.4.0.jar
+  md5: b310d32b23e346f30bdadb0370a5e4e0
+  cf_stacks:
+  - cflinuxfs2
+- name: oracleclientsdk
+  version: 11.2.0
+  uri: http://artifact.oocl.com:8081/artifactory/thirdparty_tools/thirdparty_lib/instantclient-sdk-linux.x64-11.2.0.4.0/instantclient-sdk-linux.x64-11.2.0.4.0/instantclient-sdk-linux.x64-11.2.0.4.0-instantclient-sdk-linux.x64-11.2.0.4.0.jar
+  md5: 92c841b1ae6478247e5e466fd72cc9ac
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh
